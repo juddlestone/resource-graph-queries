@@ -1,0 +1,5 @@
+resources
+| where type == "microsoft.network/applicationgateways"
+| mv-expand fqdns = properties.backendAddressPools
+| project fqdn = fqdns.properties.backendAddresses[0].fqdn
+| where isnotempty(fqdn)
