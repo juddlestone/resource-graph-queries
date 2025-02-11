@@ -1,0 +1,10 @@
+resources
+| where type == "microsoft.storage/storageaccounts"
+| extend anonymousReadAccessPermitted = tostring(properties.allowBlobPublicAccess)
+| extend networkAcls = properties.networkAcls
+| extend defaultNetworkAction = tostring(networkAcls.defaultAction)
+| extend allowedVirtualNetworks = iif(array_length(networkAcls.virtualNetworkRules) == 0, 'None', networkAcls.virtualNetworkRules)
+| extend allowedIpv4Addresses = iif(array_length(networkAcls.ipRules) == 0, 'None', networkAcls.ipRules)
+| extend allowedIpv6Addresses = iif(array_length(networkAcls.ipv6Rules) == 0, 'None', networkAcls.ipv6Rules)
+| extend allowedBypassedServices = iif(array_length(networkAcls.bypass) == 0, 'None', networkAcls.bypass)
+| project id, name, anonymousReadAccessPermitted, defaultNetworkAction, allowedVirtualNetworks, allowedIpv4Addresses, allowedIpv6Addresses, allowedBypassedServices
