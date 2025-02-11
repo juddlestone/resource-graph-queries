@@ -1,0 +1,10 @@
+resources
+| where type == "microsoft.apimanagement/service"
+| mv-expand hostNames = properties.hostnameConfigurations
+| extend hostName = tostring(hostNames.hostName)
+| extend certificate = hostNames.certificate
+| extend certificateSubject = certificate.subject
+| extend certificateExpiry = certificate.expiry
+| extend certificateKeyVaultId = tostring(hostNames.keyVaultId)
+| where hostName !contains "azure-api.net"
+| project id, hostName, certificateKeyVaultId, certificateSubject, certificateExpiry
