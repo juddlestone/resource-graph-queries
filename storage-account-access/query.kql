@@ -7,4 +7,6 @@ resources
 | extend allowedIpv4Addresses = iif(array_length(networkAcls.ipRules) == 0, 'None', networkAcls.ipRules)
 | extend allowedIpv6Addresses = iif(array_length(networkAcls.ipv6Rules) == 0, 'None', networkAcls.ipv6Rules)
 | extend allowedBypassedServices = iif(array_length(networkAcls.bypass) == 0, 'None', networkAcls.bypass)
-| project id, name, anonymousReadAccessPermitted, defaultNetworkAction, allowedVirtualNetworks, allowedIpv4Addresses, allowedIpv6Addresses, allowedBypassedServices
+| extend privateEndpointConnections = iif(array_length(properties.privateEndpointConnections) == 0, 'None', properties.privateEndpointConnections)
+| extend customDomain = iif(notempty(properties.customDomain.name), tostring(properties.customDomain.name), 'notConfigured') 
+| project id, name, anonymousReadAccessPermitted, defaultNetworkAction, allowedVirtualNetworks, allowedIpv4Addresses, allowedIpv6Addresses, allowedBypassedServices, privateEndpointConnections, customDomain
