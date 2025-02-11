@@ -1,0 +1,15 @@
+resources
+| where type =~ 'microsoft.network/networkinterfaces'
+| where properties.networkSecurityGroup != ''
+| extend nicNsgId = tostring(properties.networkSecurityGroup.id)
+| extend subnetId = tostring(properties.ipConfigurations[0].properties.subnet.id)
+| join kind=leftouter (
+    resources
+    | where type =~ 'microsoft.network/virtualnetworks'
+    | mv-expand subnet=properties.subnets
+    | extend subnetId = tostring(subnet.id)
+    | extend subnetNsgId = tostring(subnet.properties.networkSecurityGroup.id)
+    | project subnetId, subnetNsgId
+) on subnetId
+| where isnotempty(subnetNsgId)
+| project subscriptionId, resourceGroup, name, nicNsgId, subnetId, subnetNsgId
