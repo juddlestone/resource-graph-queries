@@ -2,8 +2,10 @@ resources
 | where type has "microsoft.compute/disks"
 | extend diskState = tostring(properties.diskState)
 | extend diskTier = tostring(properties.tier)
-| extend lastOwnershipUpdateTime = iif(isnull(properties.LastOwnershipUpdateTime) or properties.LastOwnershipUpdateTime == "", "never", tostring(properties.LastOwnershipUpdateTime))
+| extend timeCreated = tostring(properties.timeCreated)
+| extend diskSizeGB = tostring(properties.diskSizeGB)
+| extend sku = tostring(sku.name)
+| extend lastOwnershipUpdateTime = iif(isnull(properties.LastOwnershipUpdateTime) or properties.LastOwnershipUpdateTime == "", "neverAttached", tostring(properties.LastOwnershipUpdateTime))
 | where managedBy == "" or diskState == 'Unattached'
 | where name !has "-ASRReplica"
-| extend Details = pack_all()
-| project id, name, resourceGroup, diskState, sku.name, properties.diskSizeGB, diskTier, lastOwnershipUpdateTime, location, tags
+| project id, name, resourceGroup, sku, diskSizeGB, diskTier, lastOwnershipUpdateTime , timeCreated, location, tags
