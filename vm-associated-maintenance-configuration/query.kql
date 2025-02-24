@@ -1,0 +1,7 @@
+maintenanceresources 
+| where ['type'] =~ "microsoft.maintenance/configurationassignments"  
+| extend resourceName = tostring(split(id, '/')[-5])
+| extend resourceType = tostring(split(id, '/')[-6])
+| extend maintenanceConfigurationId = tostring(properties.maintenanceConfigurationId)
+| extend maintenanceConfigurationName = split(maintenanceConfigurationId, '/')[-1]
+| project maintenanceConfigurationName, resourceName
