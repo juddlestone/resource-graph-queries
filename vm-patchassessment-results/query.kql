@@ -1,0 +1,7 @@
+patchassessmentresources 
+| where type == "microsoft.compute/virtualmachines/patchassessmentresults"
+| extend virtualMachine = tostring(split(id, '/')[-3])
+| extend operatingSystem = tostring(properties.osType)
+| extend availablePatches = properties.availablePatchCountByClassification
+| project virtualMachine, operatingSystem, availablePatches
+| sort by operatingSystem desc 
