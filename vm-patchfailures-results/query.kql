@@ -1,0 +1,15 @@
+patchinstallationresources
+| where ['type'] == "microsoft.compute/virtualmachines/patchinstallationresults/softwarepatches"
+| extend installationState = tostring(properties.installationState)
+| where installationState == "Failed"
+| extend patchId = split(id, '/')[-3]
+| extend virtualMachineName = tostring(split(id, '/', 8)[0])
+| extend classification = tostring(properties.classifications[0])
+| extend rebootRequired = tostring(properties.rebootRequired)
+| extend rebootBehaviour = tostring(properties.rebootBehavior)
+| extend patchName = tostring(properties.patchName)
+| extend severity = tostring(iff(isnotempty(properties.msrcSeverity), properties.msrcSeverity, 'N/A'))
+| extend dateTime = tostring(properties.lastModifiedDateTime)
+| extend kb = properties.kbId
+| project dateTime, patchId, virtualMachineName, kb, classification, severity, patchName, installationState, rebootRequired, rebootBehaviour
+| sort by dateTime desc 
