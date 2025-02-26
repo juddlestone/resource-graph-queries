@@ -1,0 +1,10 @@
+patchinstallationresources
+| where ['type'] == "microsoft.compute/virtualmachines/patchinstallationresults"
+| extend virtualMachineName = tostring(split(id, '/', 8)[0])
+| mv-expand error = properties.errorDetails.details
+| extend errorDetail = replace(@'["\[\]\.]', '', tostring(error.message))
+| extend updateStatus = properties.status
+| where updateStatus != "Succeeded"
+| extend dateTime = tostring(properties.lastModifiedDateTime)
+| project dateTime, virtualMachineName, errorDetail, updateStatus
+| distinct virtualMachineName, errorDetail
